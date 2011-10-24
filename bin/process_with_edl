@@ -1,0 +1,16 @@
+#!/usr/bin/env ruby
+
+edl = ARGV[0]
+files = ARGV[1..-1]
+
+puts "You want to apply #{edl} to #{files.join ', '}"
+
+files.each do |file|
+  
+  puts "Applying edl to #{file}"
+  
+  system "/usr/bin/env mencoder #{file} -edl #{edl} -ovc copy -oac copy -o #{file}.new"
+  
+end
+
+puts "Files processed!"
