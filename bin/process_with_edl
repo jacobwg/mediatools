@@ -1,5 +1,30 @@
 #!/usr/bin/env ruby
 
+require 'rubygems'
+require 'pp'
+
+
+class EdlParser
+  
+  def initialize
+    @actions = nil
+  end
+  
+  def self.parse(filename)
+    actions = []
+    text = File.open(filename, 'rb') { |f| f.read }
+    text.split("\n").each { |line|
+      line.gsub(/([\d|.]*) ([\d|.]*) (\d)/) { |s|
+        actions << [$1.to_f, $2.to_f, $3.to_i]
+      }      
+    }
+    
+    actions
+  end
+
+end
+
+
 edl = ARGV[0]
 files = ARGV[1..-1]
 
@@ -9,8 +34,47 @@ files.each do |file|
   
   puts "Applying edl to #{file}"
   
-  system "/usr/bin/env mencoder #{file} -edl #{edl} -ovc copy -oac copy -o #{file}.new"
+  actions = EdlParser.parse edl
+  
+  position = 0
+  tmp_name = 1
+  
+  actions.each do |action|
+    system "/usr/bin/env ffmpeg -i #{file} -vcodec copy -acodec copy -ss #{position} -t #{action[0] - position} -sameq -y #{file}.part.#{tmp_name}.avi"
+    tmp_name += 1
+    system "/usr/bin/env ffmpeg -i #{file} -vcodec copy -acodec ac3 -vol 0 -ss #{action[0]} -t #{action[1] - action[0]} -sameq -y #{file}.part.#{tmp_name}.avi"
+    tmp_name += 1
+    position = action[1]
+  end
+
+  system "/usr/bin/env ffmpeg -i #{file} -vcodec copy -acodec copy -ss #{position} -sameq -y #{file}.part.#{tmp_name}.avi"  
+  
+  file_list = ''
+  
+  (1...tmp_name).to_a.each do |i|
+    file_list += " #{file}.part.#{i}.avi"
+  end
+  
+  system "cat #{file_list} > #{file}.new.avi"
+  system "mencoder #{file}.new.avi -o #{file}.finalavi.avi -forceidx -ovc copy -oac copy"
+  
+  #system "/usr/bin/env mencoder \"#{file}\" -edl \"#{edl}\" -ovc copy -oac copy -o \"#{file}.new\""
   
 end
 
 puts "Files processed!"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

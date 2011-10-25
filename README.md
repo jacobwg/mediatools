@@ -11,5 +11,7 @@ I've only tested this on Mac OS X Lion and a current version of Arch - will prob
 * python
 * mplayer / mencoder (`brew install mplayer`)
 * mkvtoolnix (`brew install mkvtoolnix`)
+* mediainfo (`brew install mediainfo`)
+* mp4box (`brew install mp4box`)
 
 I'll be working on standardizing stuff so that there's not so many redundant dependencies.
