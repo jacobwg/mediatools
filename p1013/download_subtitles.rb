@@ -3,7 +3,7 @@ require 'optparse'
 require 'uri'
 require 'rubygems'
 require 'highline/import'
-require 'lib/open_subtitles'
+require './lib/open_subtitles'
 
 
 server = OpenSubtitles::Server.new(

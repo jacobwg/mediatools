@@ -1,11 +1,12 @@
 #!/usr/bin/env ruby
 
 require 'rubygems'
+
 require 'pp'
 
 require 'iconv'
 
-require './lib/profanity'
+require '../p1013/lib/profanity'
 
 
 def timecode_to_seconds(timecode)
@@ -38,28 +39,30 @@ text.split("\n\n").each { |subtitle|
 
   if (not parts[2].nil? and Profanity.default.profane?(parts[2])) or (not parts[3].nil? and Profanity.default.profane?(parts[3]))
     puts "Found profanity at #{parts[1]}"
-    parts[1].gsub(/(\d{2}:\d{2}:\d{2},\d{3}) --> (\d{2}:\d{2}:\d{2},\d{3})/) { |timecode|
-      edl += "#{timecode_to_seconds($1) - 1} #{timecode_to_seconds($2)} 1\n"
-    }
     
     puts parts[2]
     puts parts[3] if not parts[3].nil?
+#    puts '[y/n]? '
     
-    captions += parts[0]
-    captions += "\n"
-    captions += parts[1]
-    captions += "\n"
-    captions += Profanity.default.censor(parts[2])
-    captions += "\n" + Profanity.default.censor(parts[3]) if not parts[3].nil?
-    captions += "\n\n"
+      parts[1].gsub(/(\d{2}:\d{2}:\d{2},\d{3}) --> (\d{2}:\d{2}:\d{2},\d{3})/) { |timecode|
+        edl += "#{timecode_to_seconds($1) - 1} #{timecode_to_seconds($2)} 1\n"
+      }
+      captions += parts[0]
+      captions += "\n"
+      captions += parts[1]
+      captions += "\n"
+      captions += Profanity.default.censor(parts[2])
+      captions += "\n" + Profanity.default.censor(parts[3]) if not parts[3].nil?
+      captions += "\n\n"
+
   end
 }
 
 
-newFile = File.open("edl.txt", "w")
+newFile = File.open(ARGV[1], "w")
 newFile.write(edl)
 
-newFile = File.open("cleaned_captions.srt", "w")
+newFile = File.open(ARGV[2], "w")
 newFile.write(captions)
 
 
