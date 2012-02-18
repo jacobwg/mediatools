@@ -1,5 +1,7 @@
 #!/usr/bin/perl
 
+# broken
+
 use Crypt::Rijndael;
 use POSIX qw(ceil);
 
