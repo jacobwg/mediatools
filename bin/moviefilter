@@ -1,27 +1,10 @@
 #!/usr/bin/env ruby
 
+# Does nothing at the moment but parse command line stuff
+
 require 'rubygems'
-#require 'commander/import'
-require "#{File.dirname(__FILE__)}/../lib/moviefilter"
 require 'pp'
 require 'trollop'
-
-## Here's a program called "magic". We want this behavior:
-##
-##   magic delete <fn> => deletes a file
-##   magic copy <fn>   => copies a file
-##
-## So 'delete' and 'copy' are subcommands.
-##
-## There are some global options, which appear to the left of the subcommand.
-## There are some subcommand options, which appear to the right.
-##
-## Subcommand options can be specific to the subcommand. 'delete' might take
-## different options from 'copy'.
-##
-## We do this by calling Trollop twice; one for the global options and once for
-## the subcommand options. We need to tell Trollop what the subcommands are, so
-## that it stops processing the global options when it encounters one of them.
 
 SUB_COMMANDS = %w(delete copy)
 global_opts = Trollop::options do

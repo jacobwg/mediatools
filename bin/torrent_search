@@ -1,4 +1,4 @@
-#! /usr/bin/env ruby
+#!/usr/bin/env ruby
 
 require 'rubygems'
 require 'thepiratebay'
@@ -8,29 +8,11 @@ require 'pp'
 
 search = ARGV.join ' '
 
-=begin
-puts "You're searching for #{search}"
-puts "Loading page http://btjunkie.org/search?c=4&o=52&t=1&q=#{URI.escape search}..."
-page = open("http://btjunkie.org/search?c=4&o=52&t=1&q=#{URI.escape search}")
-doc = Nokogiri::HTML(page)
-puts "Page loaded.  Parsing..."
-sub = doc.css('div#main > table.tab_results').last
-puts "Identified results..."
-results = sub.css('tr[onmouseout] table')
-results.each do |result|
-  pp result.css('th.label a').first
-end
-=begin
-=end
-
-#=begin
 results = ThePirateBay::Search.new(search, 0, ThePirateBay::SortBy::Seeders, ThePirateBay::Category::Video).results
 
 torrents = []
 
 results.each do |t|
-
-  #pp t
 
   parts = t[:title].split /[ .\-\(\)]/
   parts = parts.delete_if { |i| i.empty? }
@@ -109,8 +91,6 @@ results.each do |t|
 
   end
 
-  #pp parts
-
 end
 
 seasons = {}
@@ -158,7 +138,9 @@ seasons.each do |season, episodes|
   end
 end
 
+=begin
 
+# This section makes an RSS feed for the results
 
 require 'rss/maker'
 
@@ -187,5 +169,4 @@ File.open(destination,"w") do |f|
 f.write(content)
 end
 
-=begin
 =end
