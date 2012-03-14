@@ -11,6 +11,7 @@ require 'pp'
 require 'renamer/constants'
 require 'renamer/util'
 require 'renamer/files'
+require 'renamer/season'
 
 
 EXTS = %w(avi mpeg xvid mp4 m4v mkv wmv mpg)
@@ -104,15 +105,19 @@ def dups_with_count array
 end
 
 
+show_id = 75886
+season_number = 1
+season = Renamer::Season.new show_id, season_number
 
-tvdb = TvdbParty::Search.new(ENV['TVDB_KEY'])
+season.episodes.each do |episode|
+  puts "#{episode[:name]} is episode #{episode[:number]}"
+  puts "If there were parts, it would be episode #{episode[:part_number]} part #{episode[:part_letter]}"
+
+  puts
+end
 
 files_class = Renamer::Files.new('.')
-
-
-show_id = 75886
-show = tvdb.get_series_by_id(show_id)
-files_class.known_episodes = show.episodes
+files_class.known_episodes = season.episodes
 
 
 
@@ -122,7 +127,7 @@ files = files_class.files
 puts "#{files.length} Media Files Found"
 
 files_class.files.each do |file|
-  puts file
+  #puts file
 end
 
 =begin

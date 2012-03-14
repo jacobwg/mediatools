@@ -54,7 +54,7 @@ module Renamer
 
       @files.each_index do |idx|
         episode, score = most_similar(@files[idx][:search_title], @known_episodes)
-        @files[idx][:guessed_title] = episode.name
+        @files[idx][:guessed_title] = episode[:name]
 
         @files[idx][:guessed_episode] = episode
         @files[idx][:guessed_title_score] = score
@@ -90,10 +90,10 @@ module Renamer
 
     def most_similar filename, episodes
       sim = episodes.first
-      sim_score = Renamer::Util.similarity(filename, episodes.first.name)
+      sim_score = Renamer::Util.similarity(filename, episodes.first[:name])
 
       episodes.each do |episode|
-        score = Renamer::Util.similarity(filename, episode.name)
+        score = Renamer::Util.similarity(filename, episode[:name])
         if score > sim_score
           sim = episode
           sim_score = score
