@@ -1,10 +1,17 @@
 #!/usr/bin/env ruby
 
+$:.unshift File.dirname(__FILE__)
+
 require 'rubygems'
 require 'highline/import'
 require 'fileutils'
 require 'tvdb_party'
 require 'pp'
+
+require 'renamer/constants'
+require 'renamer/util'
+require 'renamer/files'
+
 
 EXTS = %w(avi mpeg xvid mp4 m4v mkv wmv mpg)
 
@@ -24,43 +31,6 @@ FORMATS = [
   'divx', 'xvid', 'x264', '264', 'mpeg', 'wmv'
 ]
 
-def similarity(str1, str2)
-  str1 = str1.dup
-  str2 = str2.dup
-  str1.downcase!
-  pairs1 = (0..str1.length-2).collect {|i| str1[i,2]}.reject {
-    |pair| pair.include? " "}
-  str2.downcase!
-  pairs2 = (0..str2.length-2).collect {|i| str2[i,2]}.reject {
-    |pair| pair.include? " "}
-  union = pairs1.size + pairs2.size
-  intersection = 0
-  pairs1.each do |p1|
-    0.upto(pairs2.size-1) do |i|
-      if p1 == pairs2[i]
-        intersection += 1
-        pairs2.slice!(i)
-        break
-      end
-    end
-  end
-  (2.0 * intersection) / union
-end
-
-def most_similar file, episodes
-  sim = episodes.first
-  sim_score = similarity(file, episodes.first.name)
-
-  episodes.each do |episode|
-    score = similarity(file, episode.name)
-    #puts "#{score} - #{episode.name}"
-    if score > sim_score
-      sim = episode
-      sim_score = score
-    end
-  end
-  [sim, sim_score]
-end
 
 def find_numbers string
   guess_one = string.scan /S(\d{1,2})E(\d{1,2})([a-z])?/i
@@ -137,6 +107,26 @@ end
 
 tvdb = TvdbParty::Search.new(ENV['TVDB_KEY'])
 
+files_class = Renamer::Files.new('.')
+
+
+show_id = 75886
+show = tvdb.get_series_by_id(show_id)
+files_class.known_episodes = show.episodes
+
+
+
+files_class.process
+files = files_class.files
+
+puts "#{files.length} Media Files Found"
+
+files_class.files.each do |file|
+  puts file
+end
+
+=begin
+
 begin
 
   #show_id = ask("What is the TMDb show ID? ")
@@ -147,39 +137,14 @@ begin
   show = tvdb.get_series_by_id(show_id)
   show.episodes
 
-  files = []
-  EXTS.each do |ext|
-    new_files = Dir.glob("*.#{ext}")
-    next if new_files.empty?
-    files += new_files
-  end
-
-  files.sort!
+  files_class = Renamer::Files.new('.')
+  files = files_class.files
 
   puts "#{files.length} Media Files Found"
 
-  parts_array = files.map do |f|
-    f.split(/[ ,\-\.\(\)]/).compact.reject(&:empty?)
-  end
-
-  parts_array.map! do |f|
-    f.reject { |p| QUALITIES.include? p.downcase }
-  end
-  parts_array.map! do |f|
-    f.reject { |p| FORMATS.include? p.downcase }
-  end
-  parts_array.map! do |f|
-    f.reject { |p| EXTS.include? p.downcase }
-  end
-
-  flat_parts_array = parts_array.flatten
-  parts_duplicates = dups_with_count flat_parts_array.map!(&:downcase)
-
-  puts parts_duplicates
-
-  duplicate_threshhold = files.length.to_f * 0.8
-  filtered_duplicates = parts_duplicates.reject { |key, count| count < duplicate_threshhold }
-  puts filtered_duplicates
+  puts files_class.parts
+  puts files_class.duplicate_parts
+  puts files_class.common_duplicate_parts
 
   files.each do |file|
     puts file
@@ -262,3 +227,5 @@ rescue EOFError
 rescue Interrupt
   abort "\n^C"
 end
+
+=end
