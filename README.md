@@ -8,6 +8,10 @@
 * `bin/srename` - convenience script for mass-renaming TV seasons
 * `bin/torrent_search` - searches The Pirate Bay for a given TV show and parses the results into seasons, episodes, formats, and quality (partially complete RSS feed generation too)
 
+# New Project: `idtest`
+
+This will probably become its own Github project - the `idtest/process.rb` script is an updated "smart" version of the `bin/srename` script that is aware of show information from thetvdb.com and uses lots of algorithms to match files to episodes.  It will hopefully have a future ncurses frontend.
+
 ## Subfolders / Subprojects
 
 * hulu-subs-decryption - decryption for Hulu's subtitles (only the perl version works)
