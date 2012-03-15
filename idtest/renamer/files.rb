@@ -3,9 +3,12 @@ module Renamer
 
     COMMON_RATIO = 0.70 # if a string is in 70% of filenames, it is common
 
+    attr_accessor :directory, :files, :parts, :duplicate_parts, :common_duplicate_parts, :known_episodes, :use_alternate_naming
+
     def initialize directory
       @directory = directory
       @files = @parts = @duplicate_parts = @common_duplicate_parts = @known_episodes = []
+      @use_alternate_naming = false
     end
 
     def load
@@ -32,6 +35,12 @@ module Renamer
         }
       end
 
+      @files.each_index do |idx|
+        @files[idx][:parts].map! do |part|
+          RomanNumerals.is_roman_numeral?(part) ? RomanNumerals.to_integer(part).to_s : part
+        end
+      end
+
       @parts = Hash.new(0)
       @files.each do |file|
         file[:parts].each do |part|
@@ -51,11 +60,11 @@ module Renamer
           @common_duplicate_parts.include? p.downcase
         end.join ' '
       end
-=begin
-      @files.each_index do |idx|
+
+      @files.each_index do |index|
         parts_plus_numbers = []
-        episode[:parts].each_index do |idx|
-          guess_one, guess_two, guess_three, guess_four = find_numbers episode[:parts][idx]
+        @files[index][:parts].each_index do |idx|
+          guess_one, guess_two, guess_three, guess_four = find_numbers @files[index][:parts][idx]
           guess_episode = nil
           guess_part = nil
           guess_finder = -1
@@ -93,59 +102,21 @@ module Renamer
 
         parts_plus_numbers.sort! { |a,b| b[:guess_finder] <=> a[:guess_finder] }
 
-        ep = parts_plus_numbers.first[:guess_episode]
-        pt = parts_plus_numbers.first[:guess_part]
+        if parts_plus_numbers.first[:guess_episode].to_i <= @known_episodes.length
+          @files[index][:guessed_filename_episode] = parts_plus_numbers.first[:guess_episode].to_i
+          @files[index][:guessed_filename_part] = parts_plus_numbers.first[:guess_part].nil? ? nil : parts_plus_numbers.first[:guess_part].downcase
+        else
+          @files[index][:guessed_filename_episode] = -1
+          @files[index][:guessed_filename_part] = nil
+        end
+
+        @use_alternate_naming = true unless @files[index][:guessed_filename_part].nil?
+
       end
-=end
-      @files.each_index do |idx|
-        episode, score = most_similar(@files[idx][:search_title], @known_episodes)
-        @files[idx][:guessed_title] = episode[:name]
 
-        @files[idx][:guessed_episode] = episode
-        @files[idx][:guessed_title_score] = score
-      end
-
-    end
-
-    def files
-      @files
-    end
-
-    def parts
-      @parts
-    end
-
-    def duplicate_parts
-      @duplicate_parts
-    end
-
-    def common_duplicate_parts
-      @common_duplicate_parts
-    end
-
-    def known_episodes
-      @known_episodes
-    end
-
-    def known_episodes= ke
-      @known_episodes = ke
     end
 
     protected
-
-    def most_similar filename, episodes
-      sim = episodes.first
-      sim_score = Renamer::Util.similarity(filename, episodes.first[:name])
-
-      episodes.each do |episode|
-        score = Renamer::Util.similarity(filename, episode[:name])
-        if score > sim_score
-          sim = episode
-          sim_score = score
-        end
-      end
-      [sim, sim_score]
-    end
 
     def find_numbers string
       guess_one = string.scan /S(\d{1,2})E(\d{1,2})([a-z])?/i
@@ -157,7 +128,7 @@ module Renamer
       guess_three = string.scan /S(\d{1,2})/i
 
       # Format: 001
-      guess_four = string.scan /(\d{1,2})([a-z])?/i
+      guess_four = string.scan /(\d{2,3})([a-z])?/i
 
       [guess_one, guess_two, guess_three, guess_four]
 

@@ -7,12 +7,17 @@ module Renamer
       @tvdb_id = tvdb_id
       @season_number = season_number
       @tvdb = TvdbParty::Search.new(ENV['TVDB_KEY'])
+      puts "Loading show information..."
       @show = tvdb.get_series_by_id(@tvdb_id)
       @episodes = show.episodes.reject { |e| e.season_number.to_i != @season_number }
+      puts "Loaded"
 
       @episodes = @episodes.to_a.map do |episode|
         {
           :name => episode.name,
+          :search_name => episode.name.split(/[ ,\-\.\(\)]/).compact.reject(&:empty?).map do |part|
+            RomanNumerals.is_roman_numeral?(part) ? RomanNumerals.to_integer(part).to_s : part
+          end.join(' '),
           :number => episode.number.to_i,
           :overview => episode.overview,
           :air_date => episode.air_date,

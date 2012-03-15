@@ -7,11 +7,13 @@ require 'highline/import'
 require 'fileutils'
 require 'tvdb_party'
 require 'pp'
+require 'romans'
 
 require 'renamer/constants'
 require 'renamer/util'
 require 'renamer/files'
 require 'renamer/season'
+require 'renamer/matcher'
 
 
 EXTS = %w(avi mpeg xvid mp4 m4v mkv wmv mpg)
@@ -94,10 +96,10 @@ season_number = 1
 season = Renamer::Season.new show_id, season_number
 
 season.episodes.each do |episode|
-  puts "#{episode[:name]} is episode #{episode[:number]}"
-  puts "If there were parts, it would be episode #{episode[:part_number]} part #{episode[:part_letter]}"
+#  puts "#{episode[:name]} is episode #{episode[:number]}"
+#  puts "If there were parts, it would be episode #{episode[:part_number]} part #{episode[:part_letter]}"
 
-  puts
+#  puts
 end
 
 files_class = Renamer::Files.new('.')
@@ -106,13 +108,24 @@ files_class.known_episodes = season.episodes
 
 
 files_class.process
-files = files_class.files
 
-puts "#{files.length} Media Files Found"
+puts "#{files_class.files.length} Media Files Found"
+matcher = Renamer::Matcher.new files_class, season
+matcher.match
 
-files_class.files.each do |file|
-  #puts file
+
+counter = 0
+matcher.episode_slots.each do |slot, episodes|
+  print "Slot #{slot}: "
+  print "#{season.episodes[counter][:name]} E#{season.episodes[counter][:number]}" if season.episodes[counter]
+  puts
+  episodes.each do |file|
+    puts "\t#{file[:name]}"
+  end
+  puts
+  counter += 1
 end
+#pp files_class.files
 
 =begin
 
