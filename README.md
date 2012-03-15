@@ -1,14 +1,14 @@
 # Media Tools
 
-* `bin/2avi` - converts an arbitrary number of video files to AVI files
-* `bin/make_edl`
+* `bin/2avi` - converts an arbitrary number of video files to AVI files (broken)
+* `bin/make_edl` - generates an EDL file suitable for mencoder given a subtitle file (mutes lines containing profanity)
 * `bin/mkv2avi` - uses mkvextract and ffmpeg to convert mkv's to avi's (probably best to do this manually)
 * `bin/process_with_edl` - mute/skip parts of a given video file with an edl list (uses mencoder)
 * `bin/search_reviews` - searches PluggedIn and Kids in Mind for reviews for a given movie
 * `bin/srename` - convenience script for mass-renaming TV seasons
 * `bin/torrent_search` - searches The Pirate Bay for a given TV show and parses the results into seasons, episodes, formats, and quality (partially complete RSS feed generation too)
 
-# New Project: `idtest`
+## New Project: `idtest`
 
 This will probably become its own Github project - the `idtest/process.rb` script is an updated "smart" version of the `bin/srename` script that is aware of show information from thetvdb.com and uses lots of algorithms to match files to episodes.  It will hopefully have a future ncurses frontend.
 
