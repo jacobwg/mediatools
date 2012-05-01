@@ -4,7 +4,7 @@ require 'rubygems'
 require 'highline/import'
 require 'fileutils'
 
-EXTS = %w(avi mpeg xvid mp4 m4v mkv wmv mpg)
+EXTS = %w(avi mpeg xvid mp4 m4v mkv wmv mpg flv)
 
 renames = {}
 prefix = nil
