@@ -3,6 +3,7 @@
 * `bin/2avi` - converts an arbitrary number of video files to AVI files (broken)
 * `bin/make_edl` - generates an EDL file suitable for mplayer given a subtitle file (mutes lines containing profanity)
 * `bin/mkv2avi` - uses mkvextract and ffmpeg to convert mkv's to avi's (probably best to do this manually)
+* `bin/moviefilter` - does nothing at the moment
 * `bin/process_with_edl` - mute/skip parts of a given video file with an edl list (uses mencoder)
 * `bin/search_reviews` - searches PluggedIn and Kids in Mind for reviews for a given movie
 * `bin/srename` - convenience script for mass-renaming TV seasons
