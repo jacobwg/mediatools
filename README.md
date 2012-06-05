@@ -17,7 +17,6 @@ This will probably become its own Github project - the `idtest/process.rb` scrip
 * hulu-subs-decryption - decryption for Hulu's subtitles (only the perl version works)
 * media-finder - searches NZBMatrix for a given TV show
 * p1013 - original scripts for movie filtering
-* php-hulu-filter - php version of hulu.tmfdb.org (probably doesn't work)
 * xbmcfilter - idea to filter XBMC videos based on HTTP API (proof of concept)
 
 ## Requirements
