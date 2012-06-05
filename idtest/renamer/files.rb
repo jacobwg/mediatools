@@ -119,6 +119,8 @@ module Renamer
     protected
 
     def find_numbers string
+
+      # Format S01E01
       guess_one = string.scan /S(\d{1,2})E(\d{1,2})([a-z])?/i
 
       # Format: 001x001
