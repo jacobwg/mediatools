@@ -104,7 +104,7 @@ module Renamer
 
         if parts_plus_numbers.first[:guess_episode].to_i <= @known_episodes.length
           @files[index][:guessed_filename_episode] = parts_plus_numbers.first[:guess_episode].to_i
-          @files[index][:guessed_filename_part] = parts_plus_numbers.first[:guess_part].nil? ? nil : parts_plus_numbers.first[:guess_part].downcase
+          @files[index][:guessed_filename_part] = parts_plus_numbers.first[:guess_part].try(:downcase)
         else
           @files[index][:guessed_filename_episode] = -1
           @files[index][:guessed_filename_part] = nil
@@ -130,7 +130,7 @@ module Renamer
       guess_three = string.scan /S(\d{1,2})/i
 
       # Format: 001
-      guess_four = string.scan /(\d{2,3})([a-z])?/i
+      guess_four = string.scan /(\d{2,3})([a-e])?/i
 
       [guess_one, guess_two, guess_three, guess_four]
 

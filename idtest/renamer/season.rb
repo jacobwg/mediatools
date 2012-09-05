@@ -9,7 +9,7 @@ module Renamer
       @tvdb = TvdbParty::Search.new(ENV['TVDB_KEY'])
       puts "Loading show information..."
       @show = tvdb.get_series_by_id(@tvdb_id)
-      @episodes = show.episodes.reject { |e| e.season_number.to_i != @season_number }
+      @episodes = show.episodes #.reject { |e| e.season_number.to_i != @season_number }
       puts "Loaded"
 
       @episodes = @episodes.to_a.map do |episode|
@@ -21,7 +21,8 @@ module Renamer
           :number => episode.number.to_i,
           :overview => episode.overview,
           :air_date => episode.air_date,
-          :id => episode.id.to_i
+          :id => episode.id.to_i,
+          :season_number => episode.season_number.to_i
         }
       end
 

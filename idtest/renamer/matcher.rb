@@ -23,17 +23,26 @@ module Renamer
       @episode_slots = Hash.new { |hash, key| hash[key] = [] }
 
       @season.episodes.each do |episode|
-        @episode_slots["#{episode[:part_number]}#{episode[:part_letter]}"] if @files_class.use_alternate_naming
-        @episode_slots["#{episode[:number]}"] unless @files_class.use_alternate_naming
+        puts episode
+        if @files_class.use_alternate_naming
+          @episode_slots["S#{episode[:season_number]}E#{episode[:part_number]}#{episode[:part_letter]}"]
+        else
+          @episode_slots["S#{episode[:season_number]}E#{episode[:number]}"]
+        end
       end
 
       @files.each do |file|
         if @files_class.use_alternate_naming
-          @episode_slots["#{file[:guessed_episode][:part_number]}#{file[:guessed_episode][:part_letter]}"] << file if file[:guessed_filename_episode] == -1
-          @episode_slots["#{file[:guessed_filename_episode]}#{file[:guessed_filename_part] || 'a'}"] << file unless file[:guessed_filename_episode] == -1
+          @episode_slots["S#{file[:guessed_episode][:season_number]}E#{file[:guessed_episode][:part_number]}#{file[:guessed_episode][:part_letter]}"] << file if file[:guessed_filename_episode] == -1
+          # TODO: add season to next line
+          #@episode_slots["#{file[:guessed_filename_episode]}#{file[:guessed_filename_part] || 'a'}"] << file unless file[:guessed_filename_episode] == -1
         else
-          @episode_slots["#{file[:guessed_episode][:number]}"] << file if file[:guessed_filename_episode] == -1
-          @episode_slots["#{file[:guessed_filename_episode]}"] << file unless file[:guessed_filename_episode] == -1
+          if file[:guessed_filename_episode] == -1 or true
+            @episode_slots["S#{file[:guessed_episode][:season_number]}E#{file[:guessed_episode][:number]}"] << file
+          else
+            # TODO: add season to next line
+            #@episode_slots["#{file[:guessed_filename_episode]}"] << file
+          end
         end
       end
 
